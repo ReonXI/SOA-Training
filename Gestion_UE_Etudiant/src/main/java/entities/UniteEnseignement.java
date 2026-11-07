@@ -1,5 +1,6 @@
 package entities;
-
+import javax.xml.bind.annotation.XmlRootElement;
+@XmlRootElement(name = "uniteEnseignement")
 public class UniteEnseignement {
     private int code;
     private String domaine;

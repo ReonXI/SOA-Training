@@ -1,8 +1,23 @@
 package entities;
 
+import java.util.Objects;
+
 public class Module {
     private String matricule;
     private String nom;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Module module = (Module) o;
+        return Objects.equals(matricule, module.matricule);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(matricule);
+    }
+
     private int coefficient;
     private int volumeHoraire;
     private TypeModule type;
