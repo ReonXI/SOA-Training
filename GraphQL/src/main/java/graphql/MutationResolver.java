@@ -1,57 +1,95 @@
+
 package graphql;
 
-// Import the business logic class responsible for managing "UniteEnseignement" data
-import business.UniteEnseignementBusiness;
-
-// Import the GraphQL library class used to define the root of GraphQL mutations
-import com.coxautodev.graphql.tools.GraphQLRootResolver;
-
-// Import the entity class representing a Teaching Unit (Unité d’Enseignement)
+import entities.Module;
 import entities.UniteEnseignement;
 
-/**
- * This class defines all GraphQL mutations related to the "UniteEnseignement" entity.
- * A mutation in GraphQL is used to perform write operations (create, update, delete)
- * as opposed to queries, which are for read operations.
- */
-public class MutationResolver implements GraphQLRootResolver {
+public class MutationResolver extends QueryResolver {
 
-    // Attribute used to access the business logic (service layer)
-    public UniteEnseignementBusiness helper;
+    public boolean addModule(String matricule, String libelle,
+                             int coef, int volumeHoraire,
+                             int codeUE, String type) {
 
-    /**
-     * Constructor of the resolver.
-     * It initializes the business helper that manages the teaching units.
-     */
-    public MutationResolver() {
-        helper = new UniteEnseignementBusiness();
+        UniteEnseignement ue = ueBusiness.getUEByCode(codeUE);
+
+        if (ue == null || moduleBusiness.getModuleByMatricule(matricule) != null)
+            return false;
+
+        Module module = new Module(
+                matricule,
+                libelle,
+                coef,
+                volumeHoraire,
+                Module.TypeModule.valueOf(type),
+                ue
+        );
+
+        return moduleBusiness.addModule(module);
     }
 
-    /**
-     * GraphQL Mutation: addUniteEnseignement
-     *
-     * This method allows clients to add a new "Unité d’Enseignement" to the system.
-     *
-     * When a GraphQL mutation like the following is executed:
-     *
-     * mutation {
-     *     addUniteEnseignement(
-     *         code: 101,
-     *         domaine: "Informatique",
-     *         responsable: "Dr. Smith",
-     *         credits: 4,
-     *         semestre: 2
-     *     )
-     * }
-     *
-     * GraphQL calls this Java method to create and save a new teaching unit.
-     */
-    public boolean addUniteEnseignement(int code, String domaine, String responsable, int credits, int semestre) {
-        // Create a new UniteEnseignement object with the provided parameters
-        UniteEnseignement ue = new UniteEnseignement(code, domaine, responsable, credits, semestre);
+    public Module updateModule(String matricule, String libelle,
+                               int coef, int volumeHoraire,
+                               int codeUE, String type) {
 
-        // Call the business logic method to add the new unit
-        // The helper handles the actual persistence or logic of adding the entity
-        return helper.addUniteEnseignement(ue);
+        UniteEnseignement ue = ueBusiness.getUEByCode(codeUE);
+
+        if (ue == null)
+            return null;
+
+        Module module = new Module(
+                matricule,
+                libelle,
+                coef,
+                volumeHoraire,
+                Module.TypeModule.valueOf(type),
+                ue
+        );
+
+        if (moduleBusiness.updateModule(matricule, module))
+            return module;
+
+        return null;
+    }
+
+    public String deleteModule(String matricule) {
+        if (moduleBusiness.deleteModule(matricule))
+            return "deleted successfully";
+
+        return "not found";
+    }
+
+    public boolean addUE(int code, String domaine,
+                         String responsable, int credits,
+                         int semestre) {
+
+        if (ueBusiness.getUEByCode(code) != null)
+            return false;
+
+        UniteEnseignement ue = new UniteEnseignement(
+                code, domaine, responsable, credits, semestre
+        );
+
+        return ueBusiness.addUniteEnseignement(ue);
+    }
+
+    public UniteEnseignement updateUE(int code, String domaine,
+                                      String responsable, int credits,
+                                      int semestre) {
+
+        UniteEnseignement ue = new UniteEnseignement(
+                code, domaine, responsable, credits, semestre
+        );
+
+        if (ueBusiness.updateUniteEnseignement(code, ue))
+            return ue;
+
+        return null;
+    }
+
+    public String deleteUE(int code) {
+        if (ueBusiness.deleteUniteEnseignement(code))
+            return "deleted successfully";
+
+        return "not found";
     }
 }
