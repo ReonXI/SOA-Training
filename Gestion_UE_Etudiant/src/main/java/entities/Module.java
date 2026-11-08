@@ -1,52 +1,42 @@
+
 package entities;
 
 import java.util.Objects;
 
 public class Module {
+
     private String matricule;
     private String nom;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Module module = (Module) o;
-        return Objects.equals(matricule, module.matricule);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(matricule);
-    }
-
     private int coefficient;
     private int volumeHoraire;
     private TypeModule type;
-    private UniteEnseignement uniteEnseignement; // Référence vers l'UE associée
-    public Module(){}
-    // Constructeur
-    public Module(String matricule, String nom, int coefficient, int volumeHoraire, TypeModule type) {
-        this.matricule = matricule;
-        this.nom = nom;
-        this.coefficient = coefficient;
-        this.volumeHoraire = volumeHoraire;
-        this.type = type;
-    }
-    public Module(String matricule, String nom, int coefficient, int volumeHoraire, TypeModule type,UniteEnseignement uniteEnseignement) {
-        this.matricule = matricule;
-        this.nom = nom;
-        this.coefficient = coefficient;
-        this.volumeHoraire = volumeHoraire;
-        this.type = type;
-        this.uniteEnseignement=uniteEnseignement;
-    }
-    // Enumération TypeModule
+    private UniteEnseignement uniteEnseignement;
+
     public enum TypeModule {
         TRANSVERSAL,
         PROFESSIONNEL,
         RECHERCHE
     }
 
-    // Getters et Setters
+    public Module() {
+    }
+
+    public Module(String matricule, String nom, int coefficient,
+                  int volumeHoraire, TypeModule type) {
+        this.matricule = matricule;
+        this.nom = nom;
+        this.coefficient = coefficient;
+        this.volumeHoraire = volumeHoraire;
+        this.type = type;
+    }
+
+    public Module(String matricule, String nom, int coefficient,
+                  int volumeHoraire, TypeModule type,
+                  UniteEnseignement uniteEnseignement) {
+        this(matricule, nom, coefficient, volumeHoraire, type);
+        this.uniteEnseignement = uniteEnseignement;
+    }
+
     public String getMatricule() {
         return matricule;
     }
@@ -95,5 +85,16 @@ public class Module {
         this.uniteEnseignement = uniteEnseignement;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Module)) return false;
+        Module module = (Module) o;
+        return Objects.equals(matricule, module.matricule);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(matricule);
+    }
 }

@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Service UE Universitaires</title>
+</head>
+
+<body>
+
+<h1>IESTER - Service UE Universitaires</h1>
+
+<table>
+    <tr>
+        <td colspan="2">
+            <strong>Saisir Code UE :</strong>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="code">Code :</label>
+        </td>
+        <td>
+            <input type="text" id="code" value="1">
+            <button type="button" onclick="getUEDetails()">
+                Rechercher
+            </button>
+        </td>
+    </tr>
+</table>
+
+<br>
+
+<table>
+    <tr>
+        <th colspan="2">
+            Détails d'Unité d'enseignement
+        </th>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="domaine">Domaine :</label>
+        </td>
+        <td>
+            <input type="text" id="domaine" readonly>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="responsable">Responsable :</label>
+        </td>
+        <td>
+            <input type="text" id="responsable" readonly>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="credits">Credits :</label>
+        </td>
+        <td>
+            <input type="text" id="credits" readonly>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="semestre">Semestre :</label>
+        </td>
+        <td>
+            <input type="text" id="semestre" readonly>
+        </td>
+    </tr>
+</table>
+
+<p id="message"></p>
+
+<script>
+    function getUEDetails() {
+
+        var code = document.getElementById("code").value.trim();
+        var message = document.getElementById("message");
+
+        var domaineField = document.getElementById("domaine");
+        var responsableField = document.getElementById("responsable");
+        var creditsField = document.getElementById("credits");
+        var semestreField = document.getElementById("semestre");
+
+        domaineField.value = "";
+        responsableField.value = "";
+        creditsField.value = "";
+        semestreField.value = "";
+        message.textContent = "";
+
+        if (code === "" || !/^[0-9]+$/.test(code)) {
+            message.textContent = "Veuillez saisir un code valide.";
+            return;
+        }
+
+        var xmlhttp = new XMLHttpRequest();
+
+        var url = "rest/UE/interoperabilite/" +
+            encodeURIComponent(code);
+
+        xmlhttp.onreadystatechange = function () {
+
+            if (xmlhttp.readyState === 4) {
+
+                if (xmlhttp.status === 200) {
+
+                    var uniteEns = JSON.parse(xmlhttp.responseText);
+
+                    domaineField.value = uniteEns.domaine;
+                    responsableField.value = uniteEns.responsable;
+                    creditsField.value = uniteEns.credits;
+                    semestreField.value = uniteEns.semestre;
+
+                } else if (xmlhttp.status === 404) {
+
+                    message.textContent =
+                        "Unité d'enseignement introuvable.";
+
+                } else {
+
+                    message.textContent =
+                        "Erreur HTTP : " + xmlhttp.status;
+
+                }
+            }
+        };
+
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send(null);
+    }
+</script>
+
+</body>
+</html>
